@@ -1,3 +1,7 @@
+/*
+ **  Code below copied from UnoCSS
+ */
+
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable no-useless-escape */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -8,14 +12,13 @@ import { createAutocomplete } from "@unocss/autocomplete";
 import { computed, reactive, toRaw, ref } from "@vue/reactivity";
 import type { DocItem, ResultItem, RuleItem } from "./types";
 import { extractColors, formatCSS, sampleArray } from "./utils";
-import r from './data/mdn-index.json'
+import r from "./data/mdn-index.json";
 
-export const docs = ref<DocItem[]>([])
-docs.value = (r as DocItem[])
-  .map((i) => {
-    i.type = 'mdn'
-    return i
-  })
+export const docs = ref<DocItem[]>([]);
+docs.value = (r as DocItem[]).map((i) => {
+  i.type = "mdn";
+  return i;
+});
 
 interface SearchState {
   uno: UnoGenerator;
@@ -89,12 +92,9 @@ export function createSearch({ uno, limit = 50 }: SearchState) {
       ...parts.map((i) => `${i}-`),
       ...parts.flatMap((i) => az09.map((a) => `${i}-${a}`)),
     ]).then((r) => generateForMultiple(r));
-    
+
     const searchResult = uniq(
-      [
-        ...fuse.search(input, { limit: limit * 2 }),
-        ...parts.flatMap((i) => fuse.search(i, { limit: limit * 2 })),
-      ]
+      [...fuse.search(input, { limit: limit * 2 }), ...parts.flatMap((i) => fuse.search(i, { limit: limit * 2 }))]
         .filter((i) => i.score! <= 0.5)
         .sort((a, b) => a.score! - b.score!)
         .map((i) => i.item)
@@ -108,17 +108,11 @@ export function createSearch({ uno, limit = 50 }: SearchState) {
   }
 
   async function generateForMultiple(str: string[]) {
-    return uniq(await Promise.all(str.map((i) => generateFor(i)))).filter(
-      notNull
-    );
+    return uniq(await Promise.all(str.map((i) => generateFor(i)))).filter(notNull);
   }
 
   async function prepareFuse() {
-    await Promise.all(
-      Array.from(await enumerateAutocomplete()).map(
-        async (i) => await generateFor(i)
-      )
-    );
+    await Promise.all(Array.from(await enumerateAutocomplete()).map(async (i) => await generateFor(i)));
   }
 
   async function enumerateAutocomplete() {
@@ -128,11 +122,7 @@ export function createSearch({ uno, limit = 50 }: SearchState) {
 
     const keys = a2z.flatMap((i) => [i, ...a2zd.map((j) => `${i}${j}`)]);
 
-    await Promise.all(
-      keys.map((key) =>
-        ac.suggest(key).then((i) => i.forEach((j) => matched.add(j)))
-      )
-    );
+    await Promise.all(keys.map((key) => ac.suggest(key).then((i) => i.forEach((j) => matched.add(j)))));
 
     return matched;
   }
@@ -181,48 +171,33 @@ export function createSearch({ uno, limit = 50 }: SearchState) {
 
   function generateFor(input: string) {
     if (!_generatePromiseMap.has(input))
-      _generatePromiseMap.set(
-        input,
-        _generateFor(input).catch((e) => console.error(e)) as any
-      );
+      _generatePromiseMap.set(input, _generateFor(input).catch((e) => console.error(e)) as any);
     return _generatePromiseMap.get(input);
   }
 
   function getPresetOfRule(rule?: Rule) {
     if (!rule) return;
     const r = toRaw(rule);
-    return uno.config.presets
-      ?.flat()
-      .find((i) => i.rules?.find((i) => i === r || i === rule));
+    return uno.config.presets?.flat().find((i) => i.rules?.find((i) => i === r || i === rule));
   }
 
   function getPresetOfVariant(variant?: Variant) {
     if (!variant) return;
     const v = toRaw(variant);
-    return uno.config.presets
-      ?.flat()
-      .find((i) => i.variants?.find((i) => i === v || i === variant));
+    return uno.config.presets?.flat().find((i) => i.variants?.find((i) => i === v || i === variant));
   }
 
   function getFeatureUsage(css: string) {
-    const props = uniq(
-      [...css.matchAll(/^\s+(\w[\w-]+)\:/gm)].map((i) => i[1])
-    );
-    const functions = uniq(
-      [...css.matchAll(/\b(\w+)\(/gm)].map((i) => `${i[1]}()`)
-    );
-    const pseudo = uniq(
-      [...css.matchAll(/\:([\w-]+)/gm)].map((i) => `:${i[1]}`)
-    );
+    const props = uniq([...css.matchAll(/^\s+(\w[\w-]+)\:/gm)].map((i) => i[1]));
+    const functions = uniq([...css.matchAll(/\b(\w+)\(/gm)].map((i) => `${i[1]}()`));
+    const pseudo = uniq([...css.matchAll(/\:([\w-]+)/gm)].map((i) => `:${i[1]}`));
 
-    return [...props, ...functions, ...pseudo].filter((i) =>
-      docs.value.find((s: { title: string; }) => s.title === i)
-    );
+    return [...props, ...functions, ...pseudo].filter((i) => docs.value.find((s: { title: string }) => s.title === i));
   }
 
   function getUrls(css: string) {
-    return uniq([...css.matchAll(/\burl\(([^)]+)\)/gm)].map((i) => i[1])).map(
-      (i) => (i.match(/^(['"]).*\1$/) ? i.slice(1, -1) : i)
+    return uniq([...css.matchAll(/\burl\(([^)]+)\)/gm)].map((i) => i[1])).map((i) =>
+      i.match(/^(['"]).*\1$/) ? i.slice(1, -1) : i
     );
   }
 
@@ -231,9 +206,7 @@ export function createSearch({ uno, limit = 50 }: SearchState) {
   }
 
   function getAliasOf(item: RuleItem) {
-    return [...matchedMap.values()].filter(
-      (i) => i.body === item.body && i.class !== item.class
-    );
+    return [...matchedMap.values()].filter((i) => i.body === item.body && i.class !== item.class);
   }
 
   function getItemId(item: ResultItem) {
@@ -247,11 +220,8 @@ export function createSearch({ uno, limit = 50 }: SearchState) {
     return [...matchedMap.values()]
       .filter((i) => {
         if (raw === toRaw(i)) return false;
-        if (i.context?.rules?.length !== item.context?.rules?.length)
-          return false;
-        return i.context?.rules?.every(
-          (j, k) => j === item.context?.rules?.[k]
-        );
+        if (i.context?.rules?.length !== item.context?.rules?.length) return false;
+        return i.context?.rules?.every((j, k) => j === item.context?.rules?.[k]);
       })
       .sort((a, b) => a.class.localeCompare(b.class));
   }

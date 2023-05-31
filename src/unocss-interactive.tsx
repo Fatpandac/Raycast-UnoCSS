@@ -12,7 +12,7 @@ export default function Command() {
       navigationTitle="Search Beers"
       searchBarPlaceholder="Search your favorite beer"
       onSearchTextChange={(newValue) => {
-        const defaultInput = "rand"
+        const defaultInput = "rand";
         if (!newValue) {
           setInput(defaultInput);
           return;

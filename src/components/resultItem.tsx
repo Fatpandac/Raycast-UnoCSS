@@ -68,39 +68,60 @@ ${s.result}
     })
     .join("");
 
-  return `
-### Variants
-${variantDetail}
-`;
+  return `### Variants
+${variantDetail}`;
 };
 
+function getRegex101Link(regex: RegExp, text: string) {
+  return `https://regex101.com/?regex=${encodeURIComponent(regex.source)}&flag=${encodeURIComponent(
+    regex.flags
+  )}&testString=${encodeURIComponent(text)}`;
+}
+
+function getRegexperLink(regex: RegExp) {
+  return `https://regexper.com/#${encodeURIComponent(regex.source)}`;
+}
+
+function getGitHubCodeSearchLink(key: RegExp | string, repo = "unocss/unocss") {
+  // https://docs.github.com/en/search-github/searching-on-github/searching-code#search-within-a-users-or-organizations-repositories
+  const separator = " ";
+  return `https://github.com/search?type=code&q=${encodeURI(`repo:${repo}`)}${separator}"${encodeURIComponent(
+    String(key)
+  )}"`;
+}
+
 const getRulesDetail = (item: RuleItem) => {
-  let rulesDetail = "### Rules ";
+  let rulesDetail = "### Rules \n";
 
   rulesDetail += item.context?.rules
     ?.map((r) => {
       if (typeof r[0] === "string") {
         const preset = searcher.getPresetOfRule(r);
-        return `
-[${preset?.name}](https://npmjs.com/package/${preset?.name})
-\`\`\`regex
-${r[0]}
-\`\`\``;
+        return (
+          `[${preset?.name}](https://npmjs.com/package/${preset?.name})\n` + 
+          "```text\n" +
+          `${r[0]}\n` +
+          "```\n"
+        ); // prettier-ignore
       } else if (typeof r[0] !== "string") {
-        return `
-\`\`\`
-${r[0]}
-\`\`\``;
+        return (
+          "```regex\n" +
+          `${r[0]}\n` +
+          "```\n" +
+          `[Regex101](${getRegex101Link(r[0], item.class)})\t` +
+          `[Regexper](${getRegexperLink(r[0])})\t` +
+          `[GitHub](${getGitHubCodeSearchLink(r[0])})\t`
+        );
       }
     })
-    .join();
+    .join("\n");
 
   return rulesDetail;
 };
 
 const getLayersDetail = (item: RuleItem) => {
   if (!item.layers?.length) return;
-  let layersDetail = "### Layers";
+  let layersDetail = "### Layers \n";
   item.layers.map((l) => {
     layersDetail = `${layersDetail}\n${l}`;
   });
@@ -109,31 +130,33 @@ const getLayersDetail = (item: RuleItem) => {
 };
 
 const getCSSDetail = (item: RuleItem) => {
-  return `
-### CSS
-\`\`\`css
-${item.css?.replace(/\n$/, "")}
-\`\`\`\n`;
+  return (
+    "### CSS \n" +
+    "```css\n" +
+    `${item.css?.replace(/\n$/, "")}\n` +
+    "```"
+  ); // prettier-ignore
 };
 
 const getColorsDetail = (item: RuleItem) => {
   if (!item.colors?.length) return;
 
   let colorsDetail = "### Colors\n";
-  const generateColorsSVG = (color: string) => {
-    return `<svg
+  const generateColorsSVG = (color: string) => `
+<svg
   xmlns="http://www.w3.org/2000/svg"
   xmlnsXlink="http://www.w3.org/1999/xlink"
   width='700'
   height='100'
+  
   fill='${rgbToHex(color)}'
 >
 <polygon points='0,0 700,0 700,100 0,100 0,0'>
 </polygon>
 <text x='250' y='75' style='font-size: 50pt;' fill='white'>A</text>
 <text x='400' y='75' style='font-size: 50pt;' fill='black'>A</text>
-</svg>`;
-  };
+</svg>
+`;
   colorsDetail += item.colors
     .map((c) => {
       return `<img src="${encodeURI("data:image/svg+xml;base64," + btoa(generateColorsSVG(c)))}" alt="Colors SVG" />\n`;
@@ -147,7 +170,7 @@ const getMDNDetail = (item: RuleItem) => {
   const docs = getDocs(item);
   let MDNDetail = "### MDN Docs\n";
 
-  MDNDetail += docs.map((doc) => `[MDN: ${doc.title}](${doc.url})\n\n`).join("");
+  MDNDetail += docs.map((doc) => `[MDN: ${doc.title}](${doc.url})`).join("\n\n");
 
   return MDNDetail;
 };

@@ -1,2 +1,2 @@
-export * from "./search"
-export * from "./rgbToHex"
+export * from "./search";
+export * from "./rgbToHex";
