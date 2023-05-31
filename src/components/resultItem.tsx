@@ -1,7 +1,7 @@
 import { List } from "@raycast/api";
 import { getAvatarIcon } from "@raycast/utils";
-import { searcher } from "../utils";
-import { Variant } from "unocss";
+import { rgbToHex, searcher } from "../utils";
+import { Variant, notNull } from "unocss";
 import { getDocs } from "../share-docs/utils";
 import type { DocItem, ResultItem, RuleItem } from "../share-docs/types";
 
@@ -75,27 +75,27 @@ ${variantDetail}
 };
 
 const getRulesDetail = (item: RuleItem) => {
-  return item.context?.rules
+  let rulesDetail = "### Rules ";
+
+  rulesDetail += item.context?.rules
     ?.map((r) => {
       if (typeof r[0] === "string") {
         const preset = searcher.getPresetOfRule(r);
         return `
-### Rules 
 [${preset?.name}](https://npmjs.com/package/${preset?.name})
 \`\`\`regex
 ${r[0]}
-\`\`\`
-      `;
+\`\`\``;
       } else if (typeof r[0] !== "string") {
         return `
-### Rules
 \`\`\`
 ${r[0]}
-\`\`\`
-      `;
+\`\`\``;
       }
     })
     .join();
+
+  return rulesDetail;
 };
 
 const getLayersDetail = (item: RuleItem) => {
@@ -117,17 +117,38 @@ ${item.css?.replace(/\n$/, "")}
 `;
 };
 
+const getColorsDetail = (item: RuleItem) => {
+  if (!item.colors?.length) return;
+
+  let colorsDetail = "### Colors\n";
+  const generateColorsSVG = (color: string) => {
+    return `<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlnsXlink="http://www.w3.org/1999/xlink"
+  width='700'
+  height='100'
+  fill='${rgbToHex(color)}'
+>
+<polygon points='0,0 700,0 700,100 0,100 0,0'>
+</polygon>
+<text x='250' y='75' style='font-size: 50pt;' fill='white'>A</text>
+<text x='400' y='75' style='font-size: 50pt;' fill='black'>A</text>
+</svg>`;
+  };
+  console.log(item.colors)
+  colorsDetail += item.colors.map((c) => {
+    return `<img src="${encodeURI("data:image/svg+xml;base64," + btoa(generateColorsSVG(c)))}" alt="Colors SVG" />\n`;
+  }).join("");
+
+  return colorsDetail;
+};
+
 const getMDNDetail = (item: RuleItem) => {
   const docs = getDocs(item);
   let MDNDetail = "### MDN Docs";
 
   MDNDetail += docs
-    .map((doc) => {
-      return `
-[MDN: ${doc.title}](${doc.url})
-`;
-    })
-    .join("\n");
+    .map((doc) => (`\n[MDN: ${doc.title}](${doc.url})`)).join("\n");
 
   return MDNDetail;
 };
@@ -141,8 +162,9 @@ function DetailRule(props: { item: RuleItem }) {
     getRulesDetail(item),
     getLayersDetail(item),
     getCSSDetail(item),
-    getMDNDetail(item)
-  ].join("\n"); // prettier-ignore
+    getColorsDetail(item),
+    getMDNDetail(item),
+  ].filter(notNull).join("\n"); // prettier-ignore
 
   return <List.Item.Detail markdown={detailMarkdown} />;
 }

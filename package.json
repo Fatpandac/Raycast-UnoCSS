@@ -22,10 +22,12 @@
     "@raycast/api": "^1.52.1",
     "@raycast/utils": "^1.7.0",
     "@types/prettier": "^2.7.2",
+    "@types/react-dom": "^18.2.4",
     "@unocss/autocomplete": "^0.52.4",
     "@unocss/core": "^0.52.4",
     "@vue/reactivity": "^3.3.4",
     "fuse.js": "^6.6.2",
+    "react-dom": "^18.2.0",
     "unocss": "^0.52.4"
   },
   "devDependencies": {
