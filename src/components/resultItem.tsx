@@ -113,8 +113,7 @@ const getCSSDetail = (item: RuleItem) => {
 ### CSS
 \`\`\`css
 ${item.css?.replace(/\n$/, "")}
-\`\`\`
-`;
+\`\`\`\n`;
 };
 
 const getColorsDetail = (item: RuleItem) => {
@@ -135,36 +134,61 @@ const getColorsDetail = (item: RuleItem) => {
 <text x='400' y='75' style='font-size: 50pt;' fill='black'>A</text>
 </svg>`;
   };
-  console.log(item.colors)
-  colorsDetail += item.colors.map((c) => {
-    return `<img src="${encodeURI("data:image/svg+xml;base64," + btoa(generateColorsSVG(c)))}" alt="Colors SVG" />\n`;
-  }).join("");
+  colorsDetail += item.colors
+    .map((c) => {
+      return `<img src="${encodeURI("data:image/svg+xml;base64," + btoa(generateColorsSVG(c)))}" alt="Colors SVG" />\n`;
+    })
+    .join("");
 
   return colorsDetail;
 };
 
 const getMDNDetail = (item: RuleItem) => {
   const docs = getDocs(item);
-  let MDNDetail = "### MDN Docs";
+  let MDNDetail = "### MDN Docs\n";
 
-  MDNDetail += docs
-    .map((doc) => (`\n[MDN: ${doc.title}](${doc.url})`)).join("\n");
+  MDNDetail += docs.map((doc) => `[MDN: ${doc.title}](${doc.url})\n\n`).join("");
 
   return MDNDetail;
+};
+
+const getAliasDetail = (item: RuleItem) => {
+  const alias = searcher.getAliasOf(item);
+  if (!alias.length) return;
+
+  let aliasDetail = "### Alias\n";
+  aliasDetail += alias.map((a) => `\`${a.class}\` `).join("");
+
+  return aliasDetail;
+};
+
+const getSameRuleDetail = (item: RuleItem) => {
+  const sameRules = searcher.getSameRules(item);
+  if (!sameRules.length) return;
+
+  let sameRulesDetail = "### Same Rule";
+  sameRulesDetail += sameRules.map((s) => `\`${s.class}\` `).join("");
+
+  return sameRulesDetail;
 };
 
 function DetailRule(props: { item: RuleItem }) {
   const { item } = props;
 
   const detailMarkdown = [
-    getShortCutsDetail(item),
-    getVariantsDetail(item),
-    getRulesDetail(item),
-    getLayersDetail(item),
-    getCSSDetail(item),
-    getColorsDetail(item),
-    getMDNDetail(item),
-  ].filter(notNull).join("\n"); // prettier-ignore
+    getShortCutsDetail,
+    getVariantsDetail,
+    getRulesDetail,
+    getLayersDetail,
+    getCSSDetail,
+    getColorsDetail,
+    getMDNDetail,
+    getAliasDetail,
+    getSameRuleDetail,
+  ]
+    .map((getDetailFunc) => getDetailFunc(item))
+    .filter(notNull)
+    .join("\n");
 
   return <List.Item.Detail markdown={detailMarkdown} />;
 }
