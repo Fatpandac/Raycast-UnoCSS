@@ -1,6 +1,6 @@
 import { List } from "@raycast/api";
 import { getAvatarIcon } from "@raycast/utils";
-import { searcher } from "../hooks/useSearch";
+import { searcher } from "../utils";
 import { Variant } from "unocss";
 import { getDocs } from "../share-docs/utils";
 import type { DocItem, ResultItem, RuleItem } from "../share-docs/types";
@@ -114,17 +114,17 @@ const getCSSDetail = (item: RuleItem) => {
 \`\`\`css
 ${item.css?.replace(/\n$/, "")}
 \`\`\`
-  `;
+`;
 };
 
 const getMDNDetail = (item: RuleItem) => {
   const docs = getDocs(item);
-  let MDNDetail = "### MDN";
+  let MDNDetail = "### MDN Docs";
 
   MDNDetail += docs
     .map((doc) => {
       return `
-[${doc.title}](${doc.url})
+[MDN: ${doc.title}](${doc.url})
 `;
     })
     .join("\n");

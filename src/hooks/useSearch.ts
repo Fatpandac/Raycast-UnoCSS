@@ -1,11 +1,7 @@
-import { defaultConfig } from "../uno.config";
 import { useEffect, useState } from "react";
-import { createGenerator } from "@unocss/core";
 import { ResultItem } from "../share-docs/types";
-import { createSearch } from "../share-docs";
+import { searcher } from "../utils/search";
 
-const uno = createGenerator({}, defaultConfig);
-export const searcher = createSearch({ uno });
 
 export function useSearch(input: string) {
   const [searchResult, setSearchResult] = useState<ResultItem[]>([]);

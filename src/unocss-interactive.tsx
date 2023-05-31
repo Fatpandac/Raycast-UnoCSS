@@ -1,10 +1,10 @@
 import { List } from "@raycast/api";
-import { useSearch } from "./hooks/useSearch";
-import { ResultItem } from "./components/resultItem";
+import { useSearch } from "./hooks";
+import { ResultItem } from "./components";
 import { useState } from "react";
 
 export default function Command() {
-  const [input, setInput] = useState("rand")
+  const [input, setInput] = useState("rand");
   const { searchResult, isLoading } = useSearch(input);
 
   return (
@@ -12,9 +12,13 @@ export default function Command() {
       navigationTitle="Search Beers"
       searchBarPlaceholder="Search your favorite beer"
       onSearchTextChange={(newValue) => {
-        if (!newValue) return;
+        const defaultInput = "rand"
+        if (!newValue) {
+          setInput(defaultInput);
+          return;
+        }
 
-        setInput(newValue)
+        setInput(newValue);
       }}
       filtering={false}
       isShowingDetail
