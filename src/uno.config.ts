@@ -1,12 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 // eslint-disable-next-line no-restricted-imports
-import {
-  defineConfig,
-  presetAttributify,
-  presetIcons,
-  presetUno,
-  presetWebFonts,
-} from 'unocss'
+import { defineConfig, presetAttributify, presetIcons, presetUno, presetWebFonts } from "unocss";
 
 export const defaultConfig = defineConfig<object>({
   details: true,
@@ -15,10 +9,10 @@ export const defaultConfig = defineConfig<object>({
     presetAttributify(),
     presetIcons({
       scale: 1.2,
-      cdn: 'https://esm.sh/'
-    })
+      cdn: "https://esm.sh/",
+    }),
   ],
-})
+});
 
 export default defineConfig({
   ...defaultConfig,
@@ -29,8 +23,8 @@ export default defineConfig({
     }),
     presetWebFonts({
       fonts: {
-        sans: 'Inter:100,200,400,700,800',
-        mono: 'IBM Plex Mono',
+        sans: "Inter:100,200,400,700,800",
+        mono: "IBM Plex Mono",
       },
     }),
   ],
@@ -39,13 +33,16 @@ export default defineConfig({
     [/^badge-xs-(.*)$/, ([, c]) => `badge-${c} text-xs px2 py0.5`],
     [/^badge-sm-(.*)$/, ([, c]) => `badge-${c} text-sm px3 py0.6`],
     [/^badge-lg-(.*)$/, ([, c]) => `badge-${c} px3 py0.8`],
-    [/^badge-square-(.*)$/, ([, c]) => `badge-${c} w-7 h-7 text-lg font-200 flex flex-none items-center justify-center`],
+    [
+      /^badge-square-(.*)$/,
+      ([, c]) => `badge-${c} w-7 h-7 text-lg font-200 flex flex-none items-center justify-center`,
+    ],
     {
-      'border-base': 'border-gray-500:10',
-      'bg-base': 'bg-white dark:bg-hex-121212',
-      'btn': 'px-4 py-1 inline-block bg-cyan6 hover:bg-cyan7 text-white cursor-pointer disabled:cursor-default disabled:bg-gray-600 disabled:opacity-50',
-      'link': 'op50 hover:op100 hover:text-cyan6',
-      'divider': 'border-b border-base',
+      "border-base": "border-gray-500:10",
+      "bg-base": "bg-white dark:bg-hex-121212",
+      btn: "px-4 py-1 inline-block bg-cyan6 hover:bg-cyan7 text-white cursor-pointer disabled:cursor-default disabled:bg-gray-600 disabled:opacity-50",
+      link: "op50 hover:op100 hover:text-cyan6",
+      divider: "border-b border-base",
     },
   ],
-})
+});

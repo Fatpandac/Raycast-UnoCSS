@@ -8,6 +8,7 @@ export function useSearch(input: string) {
 
   useEffect(() => {
     (async () => {
+      setIsLoading(true);
       const result = await searcher.search(input);
 
       setSearchResult(result);

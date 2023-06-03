@@ -171,6 +171,7 @@ export function createSearch({ uno, limit = 50 }: SearchState) {
 
   function generateFor(input: string) {
     if (!_generatePromiseMap.has(input))
+      // eslint-disable-next-line no-console
       _generatePromiseMap.set(input, _generateFor(input).catch((e) => console.error(e)) as any);
     return _generatePromiseMap.get(input);
   }

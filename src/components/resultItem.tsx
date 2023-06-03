@@ -238,7 +238,7 @@ function DetailRule(props: { item: RuleItem }) {
   return <List.Item.Detail markdown={detailMarkdown} />;
 }
 
-function getIcon(item: ResultItem) {
+function getResultIcon(item: ResultItem) {
   if (item.type === "mdn") {
     return getAvatarIcon("M");
   } else {
@@ -260,7 +260,7 @@ export function ResultItem(props: { item: ResultItem }) {
 
   return (
     <List.Item
-      icon={getIcon(item)}
+      icon={getResultIcon(item)}
       title={item.type === "mdn" ? item.title : (item as RuleItem).class}
       detail={item.type === "mdn" ? <DetailMdn item={item} /> : <DetailRule item={item as RuleItem} />}
     />
