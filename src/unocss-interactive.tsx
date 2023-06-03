@@ -1,7 +1,7 @@
 import { List } from "@raycast/api";
-import { useSearch } from "./hooks";
-import { ResultItem } from "./components";
 import { useState } from "react";
+import { ResultItem } from "./components";
+import { useSearch } from "./hooks";
 
 export default function Command() {
   const [input, setInput] = useState("rand");

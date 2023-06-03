@@ -133,9 +133,30 @@ const getCSSDetail = (item: RuleItem) => {
   return (
     "### CSS \n" +
     "```css\n" +
-    `${item.css?.replace(/\n$/, "")}\n` +
+    `${item.css?.replace(/\n$/, "")?.replaceAll(/url(.*)/g, 'url(data:image/svg+xml;xxx)')}\n` +
     "```"
   ); // prettier-ignore
+};
+
+const getIconDetail = (item: RuleItem) => {
+  const imageUrls = item.urls?.filter((i) => i.startsWith("data:image") || i.match(/\.(png|jpg|jpeg|svg)$/gi));
+  if (!imageUrls?.length) return;
+
+  return (
+    "### Icon \n" +
+    imageUrls
+      .map((i) => {
+        const [head, data] = i.split("utf8,");
+
+        return `<img src="${`${head}base64,${btoa(
+          decodeURI(data)
+            .replaceAll("%23", "#")
+            .replace(/width='.*?'/, "width='40px'")
+            .replace(/height='.*?'/, "height='40px'")
+        )}`}" alt="icon"/> \n`;
+      })
+      .join("")
+  );
 };
 
 const getColorsDetail = (item: RuleItem) => {
@@ -203,6 +224,7 @@ function DetailRule(props: { item: RuleItem }) {
     getVariantsDetail,
     getRulesDetail,
     getLayersDetail,
+    getIconDetail,
     getCSSDetail,
     getColorsDetail,
     getMDNDetail,
