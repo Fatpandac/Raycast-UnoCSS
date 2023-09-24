@@ -20,8 +20,8 @@ const getShortCutsDetail = (item: RuleItem) => {
   if (!item.context?.shortcuts?.length) return;
 
   const shortCuts = item.context.shortcuts.map((r) => `${r[0]} -> ${r[1]}`).join("\n");
-  return `
-    ### ShortCuts
+  console.log(shortCuts)
+  return `### ShortCuts
     ${shortCuts}
     `;
 };
